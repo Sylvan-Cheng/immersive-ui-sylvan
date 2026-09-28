@@ -17,9 +17,6 @@
   "license": "All Rights Reserved",
   "environment": "client",
   "entrypoints": {
-    "main": [
-      "it.hurts.shatterbyte.immersiveui.fabric.ImmersiveUIFabric"
-    ],
     "client": [
       "it.hurts.shatterbyte.immersiveui.fabric.client.ImmersiveUIFabricClient"
     ]
