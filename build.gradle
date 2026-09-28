@@ -1,122 +1,51 @@
 plugins {
-    id 'dev.architectury.loom' version '1.13-SNAPSHOT' apply false
-    id 'architectury-plugin' version '3.4-SNAPSHOT'
-    id 'com.gradleup.shadow' version '8.3.6' apply false
-    id("io.freefair.lombok") version "8.14.2" apply false
+    id 'net.fabricmc.fabric-loom' version '1.15.5'
 }
 
-architectury {
-    minecraft = project.minecraft_version
+version = project.mod_version
+group = project.mod_group
+
+base {
+    archivesName = project.archives_base_name
 }
 
-allprojects {
-    group = rootProject.mod_group
-    version = rootProject.mod_version + "+" + rootProject.minecraft_version
-
-    repositories {
-        maven {
-            name = 'ParchmentMC'
-            url = 'https://maven.parchmentmc.org'
-        }
+repositories {
+    mavenCentral()
+    maven {
+        url = 'https://api.modrinth.com/maven'
+        content { includeGroup 'maven.modrinth' }
     }
 }
 
-subprojects {
-    apply plugin: 'dev.architectury.loom'
-    apply plugin: 'architectury-plugin'
-    apply plugin: 'maven-publish'
-    apply plugin: 'io.freefair.lombok'
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    implementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    implementation "maven.modrinth:shatterbyte-lib:${project.shatterlib_version}"
+    compileOnly 'org.projectlombok:lombok:1.18.42'
+    annotationProcessor 'org.projectlombok:lombok:1.18.42'
+}
 
-    base {
-        archivesName = "$rootProject.mod_name" + "-" + "$project.name".toUpperCase()
+sourceSets {
+    main {
+        java.srcDirs = ['common/src/main/java', 'fabric/src/main/java']
+        resources.srcDirs = ['common/src/main/resources', 'fabric/src/main/resources']
     }
+}
 
-    repositories {
-        mavenLocal()
-        flatDir {
-            dirs 'libs'
-        }
-        maven {
-            name = "OctoStudios"
-            url = uri("https://maven.octo-studios.com/releases")
-        }
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('fabric.mod.json') {
+        expand version: project.version
     }
+}
 
-    dependencies {
-        minecraft "net.minecraft:minecraft:$rootProject.minecraft_version"
+tasks.withType(JavaCompile).configureEach {
+    options.release = 25
+}
 
-        loom {
-            silentMojangMappingsLicense()
-        }
-
-        mappings loom.layered() {
-            officialMojangMappings()
-            parchment("org.parchmentmc.data:parchment-1.21.11:2025.12.20@zip")
-        }
-
-        implementation 'org.jetbrains:annotations:20.1.0'
-
-        if (file("libs").isDirectory()) {
-            file("libs").eachFile { file ->
-                def splitPos = file.name.lastIndexOf("-")
-
-                if (file.name != "desktop.ini") {
-                    println file.name
-
-                    def modartifact = file.name.substring(0, splitPos)
-                    def modversion = file.name.substring(splitPos + 1, file.name.length() - 4)
-                    def modreference = "lib:$modartifact:$modversion"
-
-                    if ("$project.name".equalsIgnoreCase("neoforge")) {
-                        dependencies {
-                            implementation (project.dependencies.create(modreference) {
-                                transitive = false
-                            })
-                        }
-                    } else if ("$project.name".equalsIgnoreCase("fabric")) {
-                        dependencies {
-                            modImplementation project.dependencies.create(modreference);
-                        }
-                    } else {
-                        dependencies {
-                            modImplementation project.dependencies.create(modreference);
-                        }
-                    }
-
-                }
-            }
-        } else file("libs").mkdir()
-    }
-
-    java {
-        withSourcesJar()
-
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
-
-    tasks.withType(JavaCompile).configureEach {
-        it.options.release = 21
-    }
-
-    publishing {
-        repositories {
-            maven {
-                name = "octo"
-                url = "https://maven.octo-studios.com/releases"
-                credentials(PasswordCredentials)
-                authentication {
-                    basic(BasicAuthentication)
-                }
-            }
-        }
-        publications {
-            maven(MavenPublication) {
-                groupId = group
-                artifactId = project.mod_id + "-" + project.name
-                version = version + "+" + project.minecraft_version
-                from components.java
-            }
-        }
-    }
+java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }

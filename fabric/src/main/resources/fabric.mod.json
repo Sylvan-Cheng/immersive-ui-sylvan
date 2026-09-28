@@ -1,31 +1,38 @@
 {
   "schemaVersion": 1,
-  "id": "${mod_id}",
-  "version": "${mod_version}",
-  "name": "${mod_name}",
-  "description": "${mod_description}",
+  "id": "immersiveui_sylvan",
+  "version": "${version}",
+  "name": "Immersive UI: Sylvan Edition (Unofficial)",
+  "description": "Unofficial Fabric port of Immersive UI for Minecraft 26.1.2.",
   "authors": [
-    "${mod_authors}"
+    "Shatterbyte"
   ],
+  "contributors": ["Sylvan-Cheng (26.1.2 port)"],
+  "contact": {
+    "homepage": "https://github.com/Sylvan-Cheng/immersive-ui-sylvan",
+    "sources": "https://github.com/Sylvan-Cheng/immersive-ui-sylvan",
+    "issues": "https://github.com/Sylvan-Cheng/immersive-ui-sylvan/issues"
+  },
   "icon": "icon.png",
-  "license": "${mod_license}",
+  "license": "All Rights Reserved",
   "environment": "client",
   "entrypoints": {
     "main": [
-      "${mod_group}.fabric.ImmersiveUIFabric"
+      "it.hurts.shatterbyte.immersiveui.fabric.ImmersiveUIFabric"
     ],
     "client": [
-      "${mod_group}.fabric.client.ImmersiveUIFabricClient"
+      "it.hurts.shatterbyte.immersiveui.fabric.client.ImmersiveUIFabricClient"
     ]
   },
   "mixins": [
-    "${mod_id}-common.mixins.json",
-    "${mod_id}.mixins.json"
+    "immersiveui-common.mixins.json",
+    "immersiveui.mixins.json"
   ],
   "depends": {
-    "minecraft": ">=1.21.11",
-    "java": ">=21",
-    "shatterlib": ">=0.6.0.5",
+    "minecraft": "26.1.2",
+    "java": ">=25",
+    "fabricloader": ">=0.19.5",
+    "shatterlib": ">=0.7.0",
     "fabric-api": "*"
   }
 }
